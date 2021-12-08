@@ -1,0 +1,101 @@
+server:
+  port: 8080
+
+spring:
+  datasource:
+    username: root
+    password: root
+    url: jdbc:mysql://101.33.240.4:3307/eufof?useUnicode=true&characterEncoding=utf-8&useSSL=true&serverTimezone=UTC
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    type: com.alibaba.druid.pool.DruidDataSource
+    druid:
+      #初始化连接池大小
+      initial-size: 5
+      #配置最小连接数
+      min-idle: 5
+      #配置最大连接数
+      max-active: 20
+      #配置连接等待超时时间
+      max-wait: 60000
+      #配置间隔多久才进行一次检测，检测需要关闭的空闲连接，单位是毫秒
+      time-between-eviction-runs-millis: 60000
+      #配置一个连接在池中最小生存的时间，单位是毫秒
+      min-evictable-idle-time-millis: 300000
+      #测试连接
+      validation-query: SELECT 1 FROM DUAL
+      #申请连接的时候检测，建议配置为true，不影响性能，并且保证安全
+      test-while-idle: true
+      #获取连接时执行检测，建议关闭，影响性能
+      test-on-borrow: false
+      #归还连接时执行检测，建议关闭，影响性能
+      test-on-return: false
+      #是否开启PSCache，PSCache对支持游标的数据库性能提升巨大，oracle建议开启，mysql下建议关闭
+      pool-prepared-statements: true
+      #开启poolPreparedStatements后生效
+      max-pool-prepared-statement-per-connection-size: 20
+      #配置扩展插件，常用的插件有=>stat:监控统计  log4j:日志  wall:防御sql注入
+      filters: stat,wall,slf4j
+      #打开mergeSql功能；慢SQL记录
+      connection-properties: druid.stat.mergeSql\=true;druid.stat.slowSqlMillis\=5000
+      #配置DruidStatFilter
+      web-stat-filter:
+        enabled: true
+        url-pattern: "/*"
+        exclusions: "*.js,*.gif,*.jpg,*.bmp,*.png,*.css,*.ico,/druid/*"
+      #配置DruidStatViewServlet
+      stat-view-servlet:
+        url-pattern: "/druid/*"
+        #IP白名单(没有配置或者为空，则允许所有访问)
+        allow: 127.0.0.1,192.168.163.1
+        #IP黑名单 (存在共同时，deny优先于allow)
+        deny: 192.168.1.73
+        # 禁用HTML页面上的“Reset All”功能
+        reset-enable: false
+        #登录名
+        login-username: root
+        #登录密码
+        login-password: root
+  jackson:
+    date-format: yyyy-MM-dd HH:mm:ss
+    time-zone: GMT+8
+
+mybatis:
+  mapper-locations: classpath:mapping/*Mapper.xml
+  type-aliases-package: com.eu.eufof.entity
+  configuration:
+    map-underscore-to-camel-case: true
+
+
+#showSql
+logging:
+  pattern: #日志输出格式
+    console: "%d{yyyy-MM-dd HH:mm:ss.SSS} %5p %-40.40logger{39} %L -> %m%n"
+  level:
+    #  不同目录下的日志可配置不同级别  日志级别总共有TRACE < DEBUG < INFO < WARN < ERROR < FATAL ，且级别是逐渐提供，如果日志级别设置为INFO，则意味TRACE和DEBUG级别的日志都看不到
+    root: warn  #项目的所有日志
+    #不同目录下的日志可配置不同级别
+    org.springfromework.web: INFO
+    org.hibernate: ERROR
+    com:
+      example:
+        demo: DEBUG
+  file:
+    #采用相对路径方式将日志文件输出到【log/myspringboot.log】
+    path: /usr/local/logs #该属性用来配置日志文件的路径
+    name: javalog/myspringboot.log
+  config: classpath:logback-spring.xml
+
+
+mybatis-plus:
+  mapper-locations: classpath:mapping/*Mapper.xml
+  typeAliasesPackage: com.eu.eufof
+  global-config:
+    #主键类型  0:"数据库ID自增", 1:"用户输入ID",2:"全局唯一ID (数字类型唯一ID)", 3:"全局唯一ID UUID,"该类型为未设置主键类型,5, "字符串全局唯一ID"";
+    id-type: 0
+    db-column-underline: true
+    refresh-mapper: true
+  configuration:
+    map-underscore-to-camel-case: true
+    #这个配置会将执行的sql打印出来，在开发或测试的时候可以用
+    log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
+
